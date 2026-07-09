@@ -173,6 +173,10 @@
       ctxMenu.classList.add('hidden');
       switchSkin('black');
     };
+    document.getElementById('ctx-skin-rabbit').onclick = () => {
+      ctxMenu.classList.add('hidden');
+      switchSkin('rabbit');
+    };
     document.getElementById('ctx-hide-pet').onclick = () => {
       ctxMenu.classList.add('hidden');
       if (window.electronAPI) window.electronAPI.hidePet();
@@ -427,7 +431,8 @@
 
   function switchSkin(skin) {
     SpriteGenerator.setSkin(skin);
-    AnimationSystem.init(); // regenerate all sprites with new colors
+    AnimationSystem._skin = skin;
+    AnimationSystem.init();
     if (window.electronAPI) {
       window.electronAPI.savePetState({ pet_type: skin });
     }

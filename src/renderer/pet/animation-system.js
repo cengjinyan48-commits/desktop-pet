@@ -1,10 +1,16 @@
 // Animation System — State machine for all pet animations
-// States: idle | walk | sleep | happy | stretch | yawn | eat | pet
+// States: idle | walk | sleep | happy | stretch | yawn | eat | pet | rabbit | rabbit-walk | rabbit-happy
 
 const SpriteGenerator = require('./sprite-generator.js');
 
-const FRAME_COUNT = { idle:4, walk:6, sleep:4, happy:4, stretch:4, yawn:4, eat:4, pet:2 };
-const FRAME_MS    = { idle:500, walk:150, sleep:800, happy:120, stretch:200, yawn:250, eat:200, pet:300 };
+const FRAME_COUNT = { idle:4, walk:6, sleep:4, happy:4, stretch:4, yawn:4, eat:4, pet:2, rabbit:4, 'rabbit-walk':6, 'rabbit-happy':4 };
+const FRAME_MS    = { idle:500, walk:150, sleep:800, happy:120, stretch:200, yawn:250, eat:200, pet:300, rabbit:500, 'rabbit-walk':150, 'rabbit-happy':120 };
+
+function _baseState(state) {
+  if (!state) return 'idle';
+  if (state.startsWith('rabbit')) return 'rabbit';
+  return state;
+}
 
 const AnimationSystem = {
   _state: 'idle',
@@ -18,13 +24,15 @@ const AnimationSystem = {
   _randomActionInterval: 30000,
   _onStateChange: null,
   _loopCount: 0,
-  _mood: 50, // 0-100: depressed → ecstatic
+  _mood: 50,
+  _skin: 'orange',
 
   // ── Init ────────────────────────────────────────
   init() {
-    const states = ['idle','walk','sleep','happy','stretch','yawn','eat','pet'];
+    const states = ['idle','walk','sleep','happy','stretch','yawn','eat','pet','rabbit','rabbit-walk','rabbit-happy'];
     for (const s of states) this._sprites[s] = SpriteGenerator.generateAllFrames(s);
-    this._state = 'idle';
+    this._skin = SpriteGenerator.getCurrentSkin ? SpriteGenerator.getCurrentSkin() : 'orange';
+    this._state = this._skin === 'rabbit' ? 'rabbit' : 'idle';
     this._frameIndex = 0;
     this._accumulator = 0;
     this._idleTimer = 0;
@@ -72,13 +80,28 @@ const AnimationSystem = {
 
   onStateChange(cb) { this._onStateChange = cb; },
 
+  // ── Skin-aware state helper ──────────────────────
+  _s(base) {
+    if (this._skin === 'rabbit') {
+      if (base === 'idle')  return 'rabbit';
+      if (base === 'walk')  return 'rabbit-walk';
+      if (base === 'happy') return 'rabbit-happy';
+      if (base === 'sleep') return 'rabbit'; // rabbit doesn't have sleep anim
+      return 'rabbit-' + base; // fallback with prefix
+    }
+    return base;
+  },
+
   // ── Triggers ─────────────────────────────────────
-  onDragStart() { if (this._state !== 'walk') this._setStateInternal('walk'); },
-  onDragEnd()   { if (this._state === 'walk') this._setStateInternal('idle'); },
-  onCursorEnter() { this._idleTimer = 0; if (this._state === 'sleep') this._setStateInternal('idle'); },
-  onTaskCompleted() { this.changeMood(15); this._setStateInternal('happy'); },
-  onHeadPet()    { this.changeMood(5); this._setStateInternal('pet'); },
-  onFeed()       { this.changeMood(20); this._setStateInternal('eat'); },
+  onDragStart() { this._setStateInternal(this._s('walk')); },
+  onDragEnd() {
+    const cur = this._state;
+    if (cur === 'walk' || cur === 'rabbit-walk') this._setStateInternal(this._s('idle'));
+  },
+  onCursorEnter() { this._idleTimer = 0; if (this._state === 'sleep') this._setStateInternal(this._s('idle')); },
+  onTaskCompleted() { this.changeMood(15); this._setStateInternal(this._s('happy')); },
+  onHeadPet()    { this.changeMood(5); this._setStateInternal(this._s('happy')); },
+  onFeed()       { this.changeMood(20); this._setStateInternal(this._s('happy')); },
   onInteraction() { this._idleTimer = 0; },
 
   // ── Update ───────────────────────────────────────

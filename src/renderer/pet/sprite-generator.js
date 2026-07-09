@@ -9,6 +9,7 @@ const SKINS = {
   orange: { body:'#F0982A', dark:'#C87020', light:'#FFF0D0', pink:'#FFB0A0', eye:'#3A2010', shine:'#FFFFFF', nose:'#FF7070', mouth:'#5A3020' },
   white:  { body:'#F5F0EB', dark:'#D5CFC8', light:'#FFFFFF', pink:'#FFD0C8', eye:'#3A3028', shine:'#FFFFFF', nose:'#FF9090', mouth:'#5A4030' },
   black:  { body:'#4A4040', dark:'#2A2020', light:'#6A6060', pink:'#8A7070', eye:'#F0E8A0', shine:'#FFFFFF', nose:'#5A4040', mouth:'#1A1010' },
+  rabbit: { body:'#FF9CAC', dark:'#332222', light:'#FFFFFF', pink:'#FF9CAC', eye:'#332222', shine:'#FFFFFF', nose:'#332222', mouth:'#332222' },
 };
 let C = SKINS.orange;
 let currentSkin = 'orange';
@@ -211,6 +212,97 @@ function drawMouth(ctx, oy, type) {
   }
 }
 
+// ── 兔子: miyama 粉色兔 ──────────────────────────────
+
+function drawRabbit(ctx, offY, eyeType, mouthType) {
+  const oy = offY || 0;
+  const B = C; // use current skin colors
+
+  // === 耳朵 (长耳朵) ===
+  rect(ctx, 10, 0+oy, 4, 10, B.body);   // 左耳
+  rect(ctx, 18, 0+oy, 4, 10, B.body);   // 右耳
+  rect(ctx, 10, 0+oy, 1, 1, B.dark);    rect(ctx, 13, 0+oy, 1, 1, B.dark); // 左耳顶
+  rect(ctx, 18, 0+oy, 1, 1, B.dark);    rect(ctx, 21, 0+oy, 1, 1, B.dark); // 右耳顶
+  rect(ctx, 10, 9+oy, 1, 1, B.dark);    rect(ctx, 13, 9+oy, 1, 1, B.dark); // 左耳底
+  rect(ctx, 18, 9+oy, 1, 1, B.dark);    rect(ctx, 21, 9+oy, 1, 1, B.dark); // 右耳底
+  // 耳朵内侧
+  rect(ctx, 11, 2+oy, 2, 6, B.light);
+  rect(ctx, 19, 2+oy, 2, 6, B.light);
+
+  // === 头 (圆脸) ===
+  rect(ctx, 9,  7+oy, 14, 1, B.body);
+  rect(ctx, 7,  8+oy, 18, 1, B.body);
+  rect(ctx, 6,  9+oy, 20, 2, B.body);  // 最宽
+  rect(ctx, 6,  10+oy, 20, 2, B.body);
+  rect(ctx, 7,  11+oy, 18, 2, B.body);
+  rect(ctx, 8,  12+oy, 16, 1, B.body);
+  rect(ctx, 9,  13+oy, 14, 1, B.body);
+
+  // 头轮廓
+  rect(ctx, 9, 7+oy, 1, 1, B.dark);   rect(ctx, 22, 7+oy, 1, 1, B.dark);
+  rect(ctx, 6, 9+oy, 1, 2, B.dark);   rect(ctx, 25, 9+oy, 1, 2, B.dark);
+  rect(ctx, 7, 11+oy, 1, 1, B.dark);  rect(ctx, 24, 11+oy, 1, 1, B.dark);
+  rect(ctx, 9, 13+oy, 1, 1, B.dark);  rect(ctx, 22, 13+oy, 1, 1, B.dark);
+
+  // === 眼睛 (小黑豆眼) ===
+  rect(ctx, 11, 9+oy, 2, 2, B.eye);   // 左眼
+  rect(ctx, 19, 9+oy, 2, 2, B.eye);   // 右眼
+  // 高光
+  rect(ctx, 12, 9+oy, 1, 1, B.shine);
+  rect(ctx, 20, 9+oy, 1, 1, B.shine);
+
+  if (eyeType === 'closed') {
+    rect(ctx, 11, 9+oy, 2, 1, B.dark);
+    rect(ctx, 19, 9+oy, 2, 1, B.dark);
+  }
+
+  // === 鼻子 ===
+  rect(ctx, 15, 11+oy, 2, 1, B.nose);
+
+  // === W 微笑嘴 ===
+  if (mouthType !== 'open') {
+    rect(ctx, 14, 12+oy, 1, 1, B.mouth);
+    rect(ctx, 17, 12+oy, 1, 1, B.mouth);
+    rect(ctx, 15, 13+oy, 1, 1, B.mouth);
+    rect(ctx, 16, 13+oy, 1, 1, B.mouth);
+  }
+
+  // === 身体 (直立站姿) ===
+  rect(ctx, 8,  15+oy, 16, 3, B.body);
+  rect(ctx, 7,  16+oy, 18, 7, B.body);
+  rect(ctx, 8,  17+oy, 16, 6, B.body);
+  rect(ctx, 9,  23+oy, 14, 2, B.body);
+
+  // 身体轮廓
+  rect(ctx, 8, 15+oy, 1, 1, B.dark);  rect(ctx, 23, 15+oy, 1, 1, B.dark);
+  rect(ctx, 7, 16+oy, 1, 2, B.dark);  rect(ctx, 24, 16+oy, 1, 2, B.dark);
+  rect(ctx, 9, 23+oy, 1, 1, B.dark);  rect(ctx, 22, 23+oy, 1, 1, B.dark);
+
+  // === 脚 ===
+  rect(ctx, 9,  24+oy, 5, 3, B.body);
+  rect(ctx, 18, 24+oy, 5, 3, B.body);
+  rect(ctx, 9, 24+oy, 1, 1, B.dark);  rect(ctx, 13, 24+oy, 1, 1, B.dark);
+  rect(ctx, 18, 24+oy, 1, 1, B.dark); rect(ctx, 22, 24+oy, 1, 1, B.dark);
+
+  // === 右手 (画面左侧，自然下垂) ===
+  rect(ctx, 5,  18+oy, 3, 1, B.body);
+  rect(ctx, 4,  19+oy, 3, 1, B.body);
+  rect(ctx, 4,  20+oy, 2, 1, B.body);
+
+  // === 左手 (画面右侧，托白色盒子) ===
+  rect(ctx, 24, 17+oy, 3, 1, B.body);
+  rect(ctx, 25, 18+oy, 3, 1, B.body);
+  // 白色盒子
+  rect(ctx, 26, 15+oy, 4, 3, B.light);
+  rect(ctx, 25, 15+oy, 1, 1, B.dark);  rect(ctx, 29, 15+oy, 1, 1, B.dark);
+  rect(ctx, 26, 17+oy, 1, 1, B.dark);  rect(ctx, 29, 17+oy, 1, 1, B.dark);
+
+  // === 尾巴 (小圆短尾) ===
+  rect(ctx, 2, 20+oy, 3, 2, B.body);
+  rect(ctx, 2, 20+oy, 1, 1, B.dark);
+  rect(ctx, 4, 20+oy, 1, 1, B.dark);
+}
+
 // ── 帧生成 ────────────────────────────────────────────
 
 function generateFrame(state, fi) {
@@ -279,10 +371,8 @@ function generateFrame(state, fi) {
         break;
 
       case 'pet':
-        // 被摸头：眯眼开心+爱心
         drawYushao(ctx, 0, 'happy', 'smile', 0);
         if (fi % 2 === 0) {
-          // 小爱心漂浮
           ctx.fillStyle = '#FF6B8A';
           ctx.fillRect(24, 2, 2, 2);
           ctx.fillRect(26, 0, 2, 2);
@@ -290,8 +380,27 @@ function generateFrame(state, fi) {
         }
         break;
 
+      // ── Rabbit states ──────────────────────────
+      case 'rabbit':
+        drawRabbit(ctx, [0,-1,0,-1][fi], 'open', 'smile');
+        break;
+      case 'rabbit-walk':
+        drawRabbit(ctx, [1,0,1,0,-1,0][fi], 'open', 'smile');
+        break;
+      case 'rabbit-happy':
+        drawRabbit(ctx, [-2,0,-1,0][fi], 'open', 'smile');
+        // 小爱心
+        if (fi % 2 === 0) {
+          ctx.fillStyle = '#FF6B8A';
+          ctx.fillRect(22, 0, 2, 2);
+          ctx.fillRect(24, -1, 2, 2);
+          ctx.fillRect(20, -1, 2, 2);
+        }
+        break;
+
       default:
-        drawYushao(ctx, 0, 'smug', 'grumpy', 0);
+        if (currentSkin === 'rabbit') drawRabbit(ctx, 0, 'open', 'smile');
+        else drawYushao(ctx, 0, 'smug', 'grumpy', 0);
 
       function oy(base, fi) { return base + [0,-1,0,-1][fi]; }
     }
@@ -310,7 +419,7 @@ function generateFrame(state, fi) {
 }
 
 function generateAllFrames(state) {
-  const c = { idle:4, walk:6, sleep:4, happy:4, stretch:4, yawn:4, eat:4, pet:2 }[state] || 4;
+  const c = { idle:4, walk:6, sleep:4, happy:4, stretch:4, yawn:4, eat:4, pet:2, rabbit:4, 'rabbit-walk':6, 'rabbit-happy':4 }[state] || 4;
   const frames = [];
   for (let i = 0; i < c; i++) frames.push(generateFrame(state, i));
   return frames;
