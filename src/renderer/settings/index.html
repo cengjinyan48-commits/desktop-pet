@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>偏好设置</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="settings-panel">
+    <div class="header">
+      <h2>⚙️ 偏好设置</h2>
+    </div>
+
+    <div class="form">
+      <div class="field">
+        <label>🐱 宠物名字</label>
+        <input type="text" id="pet-name" placeholder="小橘" maxlength="10">
+      </div>
+
+      <div class="field">
+        <label>📅 日历名称</label>
+        <input type="text" id="calendar-name" placeholder="个人">
+        <span class="hint">macOS 日历中用于同步的日历名称</span>
+      </div>
+
+      <div class="field">
+        <label>⏰ 早安检查时间</label>
+        <div class="time-row">
+          <input type="number" id="checkin-hour" min="0" max="23" placeholder="9">
+          <span>:</span>
+          <input type="number" id="checkin-minute" min="0" max="59" placeholder="00">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="toggle-label">
+          <input type="checkbox" id="auto-launch">
+          <span>🚀 开机自动启动</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btn-save">保存设置</button>
+      <button id="btn-cancel" class="secondary">取消</button>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    require('./settings.js');
+  </script>
+</body>
+</html>

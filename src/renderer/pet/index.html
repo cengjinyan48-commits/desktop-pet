@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desktop Pet</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Canvas for pixel art pet rendering -->
+  <canvas id="pet-canvas"></canvas>
+
+  <!-- Right-click context menu -->
+  <div id="ctx-menu" class="ctx-menu hidden">
+    <div class="ctx-item" id="ctx-show-panel">📋 任务面板</div>
+    <div class="ctx-item" id="ctx-show-stats">📊 统计面板</div>
+    <div class="ctx-item" id="ctx-trigger-checkin">💬 与鱼烧互动</div>
+    <div class="ctx-item" id="ctx-feed-pet">🍙 喂鱼烧</div>
+    <div class="ctx-item" id="ctx-start-pomodoro">🍅 番茄钟</div>
+    <div class="ctx-item" id="ctx-quick-note">📝 便签</div>
+    <div class="ctx-item" id="ctx-siri">🎙️ 呼出 Siri</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" id="ctx-skin-orange">🟠 鱼烧 (橘猫)</div>
+    <div class="ctx-item" id="ctx-skin-white">⚪ 小白猫</div>
+    <div class="ctx-item" id="ctx-skin-black">⚫ 小黑猫</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" id="ctx-hide-pet">👻 隐藏鱼烧</div>
+    <div class="ctx-item ctx-danger" id="ctx-quit">退出</div>
+  </div>
+
+  <!-- Quick Note -->
+  <div id="quick-note" class="hidden">
+    <div class="note-panel">
+      <textarea id="note-textarea" placeholder="随手记…" rows="3"></textarea>
+      <div class="note-actions">
+        <button id="note-save">保存</button>
+        <button id="note-close" class="secondary">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pomodoro Timer -->
+  <div id="pomodoro-timer" class="hidden">
+    <div class="pomo-circle">
+      <span id="pomo-time">25:00</span>
+      <span id="pomo-label">专注</span>
+    </div>
+    <button id="pomo-cancel" class="pomo-cancel">✕</button>
+  </div>
+
+  <!-- Speech bubble overlay -->
+  <div id="speech-bubble" class="hidden">
+    <div class="bubble-content">
+      <p id="bubble-text"></p>
+      <div id="bubble-input" class="hidden">
+        <textarea id="task-input" placeholder="说说你今天要做什么吧..."
+          rows="3"></textarea>
+        <button id="submit-tasks">确定 ✓</button>
+        <button id="cancel-input" class="secondary">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loading">
+    <div class="dot-pulse"></div>
+  </div>
+
+  <script>
+    require('./pet.js');
+  </script>
+</body>
+</html>

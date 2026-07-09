@@ -1,0 +1,87 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #1e1c1a;
+  color: #d8d0c8;
+  overflow: hidden;
+  user-select: none;
+}
+
+.settings-panel {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 24px 28px;
+}
+
+.header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+.header h2 { font-size: 17px; font-weight: 600; color: #f0c080; }
+
+.form { flex: 1; }
+
+.field {
+  margin-bottom: 20px;
+}
+.field label {
+  display: block;
+  font-size: 13px; color: #a99;
+  margin-bottom: 6px;
+}
+.field input[type="text"],
+.field input[type="number"] {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px; color: #ddd; font-size: 14px;
+  outline: none; font-family: inherit;
+}
+.field input:focus {
+  border-color: rgba(240,160,64,0.5);
+  background: rgba(255,255,255,0.1);
+}
+
+.time-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.time-row input { width: 70px !important; text-align: center; }
+.time-row span { color: #888; font-size: 16px; }
+
+.hint { display: block; font-size: 11px; color: #666; margin-top: 4px; }
+
+.toggle-label {
+  display: flex !important; align-items: center; gap: 8px;
+  cursor: pointer; font-size: 14px !important; color: #d8d0c8 !important;
+}
+.toggle-label input[type="checkbox"] {
+  width: 16px; height: 16px; accent-color: #f0a040;
+}
+
+.actions {
+  display: flex; gap: 10px;
+  padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.actions button {
+  flex: 1; padding: 10px;
+  border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+}
+#btn-save {
+  background: #f0a040; color: #fff;
+}
+#btn-save:hover { background: #e09030; }
+#btn-cancel {
+  background: rgba(255,255,255,0.08); color: #aaa;
+}
+#btn-cancel:hover { background: rgba(255,255,255,0.14); color: #ddd; }
+
+.status {
+  text-align: center; font-size: 12px; margin-top: 10px; min-height: 18px;
+  color: #8a8;
+}
+.status.error { color: #e88; }

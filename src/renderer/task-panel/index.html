@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="panel-inner" id="panel">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h2>📋 今日任务</h2>
+        <span class="date" id="date-display"></span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-sync" title="同步日历">🔄</button>
+        <button id="btn-close" title="关闭面板">✕</button>
+      </div>
+    </div>
+
+    <!-- Mini Calendar -->
+    <div class="mini-calendar" id="mini-calendar">
+      <div class="cal-header">
+        <button id="cal-prev">‹</button>
+        <span id="cal-month-label">7月 2026</span>
+        <button id="cal-next">›</button>
+        <button id="cal-today">今天</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+    </div>
+
+    <!-- Task groups -->
+    <div class="task-groups" id="task-groups">
+      <div class="task-group" data-period="morning">
+        <div class="group-header">☀️ 上午</div>
+        <ul class="task-list" id="list-morning"></ul>
+      </div>
+      <div class="task-group" data-period="afternoon">
+        <div class="group-header">🌤️ 下午</div>
+        <ul class="task-list" id="list-afternoon"></ul>
+      </div>
+      <div class="task-group" data-period="evening">
+        <div class="group-header">🌙 晚上</div>
+        <ul class="task-list" id="list-evening"></ul>
+      </div>
+      <div class="task-group" data-period="">
+        <div class="group-header">📌 待安排</div>
+        <ul class="task-list" id="list-unscheduled"></ul>
+      </div>
+    </div>
+
+    <!-- Add task bar -->
+    <div class="add-bar">
+      <input type="text" id="new-task-input" placeholder="添加新任务… (回车提交)">
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon">☀️</div>
+      <p>今天还没有任务</p>
+      <p class="sub">小橘会在早上 9:00 来问候你~</p>
+    </div>
+  </div>
+
+  <script>
+    require('./panel.js');
+  </script>
+</body>
+</html>

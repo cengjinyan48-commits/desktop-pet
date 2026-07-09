@@ -1,0 +1,28 @@
+{
+  "name": "desktop-pet",
+  "version": "1.0.0",
+  "description": "A pixel-art desktop pet orange tabby cat that doubles as your personal assistant",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "unset ELECTRON_RUN_AS_NODE && electron .",
+    "build": "electron-builder",
+    "postinstall": "electron-rebuild -f -w better-sqlite3"
+  },
+  "keywords": [
+    "desktop-pet",
+    "electron",
+    "pixel-art"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@electron/rebuild": "^4.2.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "node-schedule": "^2.1.1"
+  }
+}

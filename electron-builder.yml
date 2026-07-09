@@ -1,0 +1,31 @@
+appId: com.desktoppet.helper
+productName: Desktop Pet
+copyright: Copyright 2026
+
+directories:
+  output: dist
+  buildResources: assets
+
+files:
+  - src/**/*
+  - assets/sprites/**/*
+  - node_modules/**/*
+  - package.json
+
+mac:
+  category: public.app-category.productivity
+  icon: assets/icons/icon.icns
+  target:
+    - target: dmg
+      arch:
+        - arm64
+  hardenedRuntime: true
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSSupportsAutomaticTermination: false
+    NSAppleEventsUsageDescription: "Desktop Pet needs to access Calendar to sync your tasks."
+
+dmg:
+  title: Desktop Pet
+  artifactName: Desktop-Pet-${version}-arm64.${ext}
