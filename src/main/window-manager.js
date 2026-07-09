@@ -27,7 +27,6 @@ function createPetWindow(savedX, savedY) {
     alwaysOnTop: true,
     hasShadow: false,
     resizable: false,
-    skipTaskbar: true,
     type: 'panel',                    // macOS: floats above normal windows
     backgroundColor: '#00000000',     // fully transparent
     webPreferences: {
