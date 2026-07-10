@@ -192,15 +192,27 @@ function register(database) {
     });
   });
 
-  // ── Focus Mode (Do Not Disturb) ─────────────────────
+  // ── Focus Mode (Hide other apps during pomodoro) ───
 
   ipcMain.handle('focus:toggle-dnd', (_e, enable) => {
     const { exec } = require('child_process');
-    const val = enable ? 'true' : 'false';
-    // Toggle macOS Focus / Do Not Disturb
-    exec(`defaults -currentHost write com.apple.notificationcenterui dndEnabledDisplayLock -bool ${val} 2>/dev/null; defaults -currentHost write com.apple.notificationcenterui doNotDisturb -bool ${val} 2>/dev/null; killall NotificationCenter 2>/dev/null`, (err) => {
-      if (err) console.error('DnD toggle error:', err.message);
-    });
+    if (enable) {
+      // Hide background apps that have a UI (not system daemons)
+      exec(`osascript -e '
+        tell application "System Events"
+          set keepList to {"Desktop Pet", "Finder"}
+          repeat with p in (every process whose visible is true and background only is false)
+            if keepList does not contain (name of p) then
+              try
+                set visible of p to false
+              end try
+            end if
+          end repeat
+        end tell'`, (err) => {
+        if (err) console.error('Focus hide error:', err.message);
+      });
+    }
+    // When pomodoro ends, we don't auto-restore — user can Cmd+Tab back
   });
 
   // ── Weather ─────────────────────────────────────────
