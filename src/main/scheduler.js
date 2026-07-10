@@ -40,19 +40,24 @@ function start(database) {
     if (h >= 9 && h <= 18) fireWaterReminder();
   });
 
-  // Fetch weather on startup
+  // Fetch weather on startup (non-blocking)
   fetchWeather();
 
-  // Startup catch-up for morning check-in
+  // Startup catch-up for morning check-in (delay to let weather arrive)
   setTimeout(() => {
     const now = new Date();
     const checkinTime = new Date();
     checkinTime.setHours(config.CHECKIN_HOUR, config.CHECKIN_MINUTE, 0, 0);
     if (now > checkinTime) {
       const lastDate = db.getLastCheckinDate();
-      if (lastDate !== db.todayStr()) fireCheckin();
+      if (lastDate !== db.todayStr()) {
+        // Retry weather fetch before check-in (in case first one failed)
+        if (!weatherCache) fetchWeather();
+        // Give weather a moment, then fire check-in
+        setTimeout(() => fireCheckin(), 1500);
+      }
     }
-  }, 5000);
+  }, 3000);
 
   console.log(`⏰ Scheduler ready: checkin@${config.CHECKIN_HOUR}:00 | reminders@5min | water@hourly | summary@21:00`);
 }
@@ -155,20 +160,23 @@ function fireWaterReminder() {
 // ── 5. Weather ─────────────────────────────────────────
 
 function fetchWeather() {
-  // Use wttr.in (free, no API key) — fetch in Chinese for Shenzhen
   const url = 'https://wttr.in/Shenzhen?format=%C+%t+%h&lang=zh';
   const { exec } = require('child_process');
   exec(`curl -s --max-time 5 "${url}"`, (err, stdout) => {
-    if (err || !stdout) {
-      weatherCache = '天气数据获取中…';
+    if (err || !stdout || stdout.trim().length < 3) {
+      // Use cached weather from DB as fallback
+      const cached = db ? db.getSetting('last_weather') : null;
+      weatherCache = cached || null;
       return;
     }
     weatherCache = stdout.trim();
+    // Cache for next startup
+    if (db) db.setSetting('last_weather', weatherCache);
   });
 }
 
 function getWeather() {
-  return weatherCache || '天气数据获取中…';
+  return weatherCache || null;
 }
 
 // Update weather every 3 hours

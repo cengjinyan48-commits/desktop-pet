@@ -7,9 +7,9 @@
 // ]
 
 const TIME_PERIOD_PATTERNS = {
-  morning:   /上午|早上|早晨|am|AM|今早/,
-  afternoon: /中午|下午|pm|PM|午后/,
-  evening:   /晚上|傍晚|夜间|今晚|夜里/
+  morning:   /上午|早上|早晨|am\b|AM\b|今早|morning|🌅|☀️|清晨|早间/,
+  afternoon: /中午|下午|pm\b|PM\b|午后|afternoon|正午|晌午|🌤️|🌥️/,
+  evening:   /晚上|傍晚|夜间|今晚|夜里|evening|night|🌙|🌃|🌆|入夜|天黑/
 };
 
 const TIME_PATTERN = /(上午|下午|晚上|中午)?\s*(\d{1,2})[点:：](\d{2})?分?/;

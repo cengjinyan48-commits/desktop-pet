@@ -19,10 +19,17 @@
       // Streak
       document.getElementById('streak-num').textContent = s.streak || 0;
 
-      // Period breakdown
+      // Period breakdown (today)
       document.getElementById('cnt-morning').textContent   = s.periods.morning   || 0;
       document.getElementById('cnt-afternoon').textContent = s.periods.afternoon || 0;
       document.getElementById('cnt-evening').textContent   = s.periods.evening   || 0;
+
+      // Weekly period breakdown (show in sub text)
+      if (s.weekPeriods) {
+        document.getElementById('cnt-morning').textContent  += '  | 本周' + (s.weekPeriods.morning   || 0);
+        document.getElementById('cnt-afternoon').textContent += '  | 本周' + (s.weekPeriods.afternoon || 0);
+        document.getElementById('cnt-evening').textContent   += '  | 本周' + (s.weekPeriods.evening   || 0);
+      }
 
       // Highlight busiest period
       for (const p of ['morning','afternoon','evening']) {

@@ -290,12 +290,23 @@ function getStats() {
   // All-time
   const allTime = db.prepare("SELECT COUNT(*) as total, SUM(CASE WHEN status='done' THEN 1 ELSE 0 END) as done FROM tasks").get();
 
+  // Week period breakdown
+  const weekPeriods = { morning: 0, afternoon: 0, evening: 0 };
+  for (const t of weekTasks) {
+    if (t.time_period && weekPeriods[t.time_period] !== undefined) {
+      weekPeriods[t.time_period]++;
+    }
+  }
+
   return {
     today: { total: todayTotal, done: todayDone, rate: todayTotal > 0 ? Math.round(todayDone/todayTotal*100) : 0 },
     week:  { total: weekTotal,  done: weekDone,  rate: weekTotal  > 0 ? Math.round(weekDone/weekTotal*100)   : 0 },
     streak,
     periods: {
       morning: periods.morning, afternoon: periods.afternoon, evening: periods.evening
+    },
+    weekPeriods: {
+      morning: weekPeriods.morning, afternoon: weekPeriods.afternoon, evening: weekPeriods.evening
     },
     busiest: periodLabels[busiestPeriod] || '无',
     allTime: { total: allTime.total || 0, done: allTime.done || 0 }

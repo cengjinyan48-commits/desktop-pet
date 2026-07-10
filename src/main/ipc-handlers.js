@@ -194,11 +194,21 @@ function register(database) {
 
   ipcMain.handle('shortcuts:run', async (_e, shortcutName) => {
     const { exec } = require('child_process');
-    // Just open Siri directly — that's what the user wants
-    exec('open -a Siri', (err) => {
-      if (err) console.error('Siri activate error:', err.message);
+    // Method 1: open Siri.app (works on most macOS versions)
+    exec('open -a Siri', (err1) => {
+      if (err1) {
+        // Method 2: AppleScript activate (fallback for older macOS)
+        exec("osascript -e 'tell application \"Siri\" to activate'", (err2) => {
+          if (err2) {
+            // Method 3: Simulate Globe/Siri key (Apple Silicon Macs)
+            exec("osascript -e 'tell application \"System Events\" to key code 179'", (err3) => {
+              if (err3) console.error('All Siri methods failed');
+            });
+          }
+        });
+      }
     });
-    return { output: 'Siri 已唤醒 🎤\n你也可以直接说「嘿 Siri」或按 Fn+空格' };
+    return { output: 'Siri 已唤醒 🎤' };
   });
 
   // ── Quick Notes ─────────────────────────────────────

@@ -91,7 +91,7 @@
     });
     window.electronAPI.onCheckin((data) => {
       let msg = getGreeting();
-      if (data && data.weather) {
+      if (data && data.weather && data.weather.length > 2) {
         msg += '\n' + data.weather;
       }
       showSpeechBubble(msg);
@@ -581,38 +581,31 @@
   }
 
   async function doAutoWalk() {
-    // Don't walk if user is interacting, or speech bubble is visible
     if (isInteractive || DragHandler.isDragging() || !bubble.classList.contains('hidden')) {
-      scheduleAutoWalk();
-      return;
+      scheduleAutoWalk(); return;
     }
-    // Don't walk if in the middle of another animation
     const state = AnimationSystem.getState();
-    if (state !== 'idle') {
-      scheduleAutoWalk();
-      return;
+    if (state !== 'idle' && state !== 'rabbit') {
+      scheduleAutoWalk(); return;
     }
 
-    // Pick random destination within screen bounds
-    // Use a reasonable area (avoid edges)
     const targetX = 100 + Math.random() * (window.screen.width - 500);
     const targetY = 100 + Math.random() * (window.screen.height - 500);
 
-    // Start walking animation
     AnimationSystem.onDragStart();
 
-    // Get current position via IPC
     let startPos = { x: 200, y: 200 };
     if (window.electronAPI) {
-      const state = await window.electronAPI.getPetState();
-      startPos = { x: state.pos_x, y: state.pos_y };
+      const s = await window.electronAPI.getPetState();
+      startPos = { x: s.pos_x, y: s.pos_y };
     }
 
-    // Animate movement in small steps over ~3 seconds
-    const steps = 20;
-    const duration = 2500; // ms
+    // Simplified smooth movement: use setInterval with direct setPosition
+    const steps = 30;
+    const duration = 2500;
     const stepMs = duration / steps;
     let step = 0;
+    let prevX = startPos.x, prevY = startPos.y;
 
     autoWalkInterval = setInterval(() => {
       step++;
@@ -620,17 +613,18 @@
         clearInterval(autoWalkInterval);
         autoWalkInterval = null;
         AnimationSystem.onDragEnd();
-        // Save final position
         if (window.electronAPI) window.electronAPI.savePetState({});
         scheduleAutoWalk();
         return;
       }
 
       const t = step / steps;
-      // Ease in-out
-      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-      const dx = Math.round((targetX - startPos.x) * ease) - (step > 1 ? Math.round((targetX - startPos.x) * ((step-1)/steps < 0.5 ? 2*((step-1)/steps)*((step-1)/steps) : -1+(4-2*((step-1)/steps))*((step-1)/steps))) : 0);
-      const dy = Math.round((targetY - startPos.y) * ease) - (step > 1 ? Math.round((targetY - startPos.y) * ((step-1)/steps < 0.5 ? 2*((step-1)/steps)*((step-1)/steps) : -1+(4-2*((step-1)/steps))*((step-1)/steps))) : 0);
+      const ease = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+      const curX = Math.round(startPos.x + (targetX - startPos.x) * ease);
+      const curY = Math.round(startPos.y + (targetY - startPos.y) * ease);
+      const dx = curX - prevX;
+      const dy = curY - prevY;
+      prevX = curX; prevY = curY;
 
       if (window.electronAPI && (dx !== 0 || dy !== 0)) {
         window.electronAPI.moveWindow({ dx, dy });
