@@ -190,19 +190,40 @@ function fireWaterReminder() {
 // ── 5. Weather ─────────────────────────────────────────
 
 function fetchWeather() {
-  const url = 'https://wttr.in/Shenzhen?format=%C+%t+%h&lang=zh';
+  const url = 'https://wttr.in/Shenzhen?format=j1';
   const { exec } = require('child_process');
   exec(`curl -s --max-time 5 "${url}"`, (err, stdout) => {
-    if (err || !stdout || stdout.trim().length < 3) {
-      // Use cached weather from DB as fallback
+    if (err || !stdout || stdout.trim().length < 10) {
       const cached = db ? db.getSetting('last_weather') : null;
       weatherCache = cached || null;
       return;
     }
-    weatherCache = stdout.trim();
-    // Cache for next startup
-    if (db) db.setSetting('last_weather', weatherCache);
+    try {
+      const data = JSON.parse(stdout);
+      const c = data.current_condition[0];
+      const code = parseInt(c.weatherCode);
+      const emoji = weatherEmoji(code);
+      const temp = c.temp_C + '°C';
+      const hum  = c.humidity + '%';
+      const desc = c.weatherDesc[0].value;
+      const feels = c.FeelsLikeC;
+      weatherCache = emoji + ' ' + desc + '  ' + temp + '  💧' + hum + '  🌡️体感' + feels + '°C';
+      if (db) db.setSetting('last_weather', weatherCache);
+    } catch (e) {
+      weatherCache = null;
+    }
   });
+}
+
+function weatherEmoji(code) {
+  if (code === 113) return '☀️';           // Sunny
+  if (code === 116) return '🌤️';           // Partly cloudy
+  if ([119,122].includes(code)) return '☁️'; // Cloudy/Overcast
+  if ([143,248,260].includes(code)) return '🌫️'; // Fog/Mist
+  if ([176,263,266,293,296,299,302,305,308,311,314,353].includes(code)) return '🌧️'; // Rain/Drizzle
+  if ([179,182,185,227,230,281,284,317,320,323,326,329,332,335,338,350,362,365,368,371,374,377].includes(code)) return '🌨️'; // Snow/Sleet
+  if ([200,386,389,392,395].includes(code)) return '⛈️'; // Thunder
+  return '🌡️';
 }
 
 function getWeather() {
