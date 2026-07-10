@@ -202,12 +202,11 @@ function fetchWeather() {
       const data = JSON.parse(stdout);
       const c = data.current_condition[0];
       const code = parseInt(c.weatherCode);
-      const emoji = weatherEmoji(code);
+      const label = weatherEmoji(code);
       const temp = c.temp_C + '°C';
       const hum  = c.humidity + '%';
-      const desc = c.weatherDesc[0].value;
       const feels = c.FeelsLikeC;
-      weatherCache = emoji + ' ' + desc + '  ' + temp + '  💧' + hum + '  🌡️体感' + feels + '°C';
+      weatherCache = label + '  ' + temp + '  💧' + hum + '  🌡️体感' + feels + '°C';
       if (db) db.setSetting('last_weather', weatherCache);
     } catch (e) {
       weatherCache = null;
@@ -216,14 +215,14 @@ function fetchWeather() {
 }
 
 function weatherEmoji(code) {
-  if (code === 113) return '☀️';           // Sunny
-  if (code === 116) return '🌤️';           // Partly cloudy
-  if ([119,122].includes(code)) return '☁️'; // Cloudy/Overcast
-  if ([143,248,260].includes(code)) return '🌫️'; // Fog/Mist
-  if ([176,263,266,293,296,299,302,305,308,311,314,353].includes(code)) return '🌧️'; // Rain/Drizzle
-  if ([179,182,185,227,230,281,284,317,320,323,326,329,332,335,338,350,362,365,368,371,374,377].includes(code)) return '🌨️'; // Snow/Sleet
-  if ([200,386,389,392,395].includes(code)) return '⛈️'; // Thunder
-  return '🌡️';
+  if (code === 113) return '☀️ 晴';
+  if (code === 116) return '🌤️ 多云';
+  if ([119,122].includes(code)) return '☁️ 阴';
+  if ([143,248,260].includes(code)) return '🌫️ 雾';
+  if ([176,263,266,293,296,299,302,305,308,311,314,353].includes(code)) return '🌧️ 雨';
+  if ([179,182,185,227,230,281,284,317,320,323,326,329,332,335,338,350,362,365,368,371,374,377].includes(code)) return '🌨️ 雪';
+  if ([200,386,389,392,395].includes(code)) return '⛈️ 雷暴';
+  return '';
 }
 
 function getWeather() {
