@@ -81,11 +81,12 @@ function createSchema() {
 }
 
 function runMigrations() {
-  // Add columns that may not exist in older DB versions
   const migrations = [
     "ALTER TABLE tasks ADD COLUMN recurrence TEXT",
     "ALTER TABLE tasks ADD COLUMN recurrence_day INTEGER",
     "ALTER TABLE tasks ADD COLUMN next_date TEXT",
+    "ALTER TABLE tasks ADD COLUMN is_focus INTEGER DEFAULT 0",
+    "ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'medium'",
   ];
   for (const sql of migrations) {
     try { db.exec(sql); } catch (e) { /* column already exists, ok */ }
@@ -126,7 +127,7 @@ function savePetState(fields) {
 
 function getTasks(date) {
   return db.prepare(
-    'SELECT * FROM tasks WHERE date = ? ORDER BY sort_order, id'
+    "SELECT * FROM tasks WHERE date = ? ORDER BY is_focus DESC, CASE priority WHEN 'high' THEN 0 WHEN 'medium' THEN 1 WHEN 'low' THEN 2 END, sort_order, id"
   ).all(date);
 }
 
@@ -140,8 +141,8 @@ function getMonthTaskDates(yearMonth) {
 
 function addTask(task) {
   const stmt = db.prepare(`
-    INSERT INTO tasks (content, time_period, suggested_time, source, date, sort_order, recurrence, recurrence_day)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO tasks (content, time_period, suggested_time, source, date, sort_order, recurrence, recurrence_day, priority, is_focus)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const result = stmt.run(
     task.content,
@@ -151,7 +152,9 @@ function addTask(task) {
     task.date || todayStr(),
     task.sort_order || 0,
     task.recurrence || null,
-    task.recurrence_day || null
+    task.recurrence_day || null,
+    task.priority || 'medium',
+    task.is_focus || 0
   );
   return db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
 }

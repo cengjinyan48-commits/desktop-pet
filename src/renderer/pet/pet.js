@@ -189,6 +189,14 @@
       ctxMenu.classList.add('hidden');
       openQuickNote();
     };
+    document.getElementById('ctx-launch-code').onclick = () => {
+      ctxMenu.classList.add('hidden');
+      if (window.electronAPI) window.electronAPI.launchApp('Visual Studio Code');
+    };
+    document.getElementById('ctx-launch-term').onclick = () => {
+      ctxMenu.classList.add('hidden');
+      if (window.electronAPI) window.electronAPI.launchApp('Terminal');
+    };
     document.getElementById('ctx-siri').onclick = () => {
       ctxMenu.classList.add('hidden');
       activateSiri();
@@ -223,6 +231,8 @@
     updatePomoDisplay();
     pomoTimer.classList.remove('hidden');
     lockInteractionFor(pomoSeconds * 1000 + 60000);
+    // Enable Do Not Disturb
+    if (window.electronAPI) window.electronAPI.toggleDnD(true);
 
     pomoInterval = setInterval(() => {
       pomoSeconds--;
@@ -270,7 +280,10 @@
   function stopPomodoro() {
     if (pomoInterval) { clearInterval(pomoInterval); pomoInterval = null; }
     pomoTimer.classList.add('hidden');
-    if (window.electronAPI) window.electronAPI.unlockInteraction();
+    if (window.electronAPI) {
+      window.electronAPI.unlockInteraction();
+      window.electronAPI.toggleDnD(false); // restore DnD
+    }
   }
 
   pomoCancel.addEventListener('click', (e) => {

@@ -189,7 +189,20 @@
   function createTaskElement(task) {
     const li = document.createElement('li');
     li.className = 'task-item';
+    if (task.is_focus) li.classList.add('focus');
+    if (task.priority === 'high') li.classList.add('priority-high');
+    if (task.priority === 'low') li.classList.add('priority-low');
     li.dataset.id = task.id;
+
+    // Focus star
+    const focusBtn = document.createElement('button');
+    focusBtn.className = 'task-focus-btn' + (task.is_focus ? ' active' : '');
+    focusBtn.textContent = task.is_focus ? '⭐' : '☆';
+    focusBtn.title = task.is_focus ? '取消焦点' : '设为焦点';
+    focusBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFocus(task, focusBtn);
+    });
 
     const cb = document.createElement('div');
     cb.className = 'task-checkbox' + (task.status === 'done' ? ' done' : '');
@@ -199,6 +212,19 @@
     const content = document.createElement('span');
     content.className = 'task-content' + (task.status === 'done' ? ' done' : '');
     content.textContent = task.content;
+
+    // Priority badge
+    if (task.priority === 'high') {
+      const badge = document.createElement('span');
+      badge.className = 'task-priority high';
+      badge.textContent = '高';
+      content.prepend(badge);
+    } else if (task.priority === 'low') {
+      const badge = document.createElement('span');
+      badge.className = 'task-priority low';
+      badge.textContent = '低';
+      content.prepend(badge);
+    }
 
     const time = document.createElement('span');
     time.className = 'task-time';
@@ -218,8 +244,18 @@
     del.textContent = '×';
     del.addEventListener('click', (e) => { e.stopPropagation(); deleteTask(task); });
 
-    li.append(cb, content, time, calIcon, del);
+    li.append(focusBtn, cb, content, time, calIcon, del);
     return li;
+  }
+
+  async function toggleFocus(task, btn) {
+    const newFocus = task.is_focus ? 0 : 1;
+    await ipcRenderer.invoke('tasks:update', task.id, { is_focus: newFocus });
+    task.is_focus = newFocus;
+    btn.textContent = newFocus ? '⭐' : '☆';
+    btn.classList.toggle('active', !!newFocus);
+    // Reload to re-sort
+    loadTasks();
   }
 
   // ── CRUD ─────────────────────────────────────────────

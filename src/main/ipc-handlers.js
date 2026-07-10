@@ -183,6 +183,26 @@ function register(database) {
     windows.closeStatsWindow();
   });
 
+  // ── Quick Launch ────────────────────────────────────
+
+  ipcMain.handle('launch:app', (_e, appName) => {
+    const { exec } = require('child_process');
+    exec(`open -a "${appName}"`, (err) => {
+      if (err) console.error('Launch error:', err.message);
+    });
+  });
+
+  // ── Focus Mode (Do Not Disturb) ─────────────────────
+
+  ipcMain.handle('focus:toggle-dnd', (_e, enable) => {
+    const { exec } = require('child_process');
+    const val = enable ? 'true' : 'false';
+    // Toggle macOS Focus / Do Not Disturb
+    exec(`defaults -currentHost write com.apple.notificationcenterui dndEnabledDisplayLock -bool ${val} 2>/dev/null; defaults -currentHost write com.apple.notificationcenterui doNotDisturb -bool ${val} 2>/dev/null; killall NotificationCenter 2>/dev/null`, (err) => {
+      if (err) console.error('DnD toggle error:', err.message);
+    });
+  });
+
   // ── Weather ─────────────────────────────────────────
 
   ipcMain.handle('weather:get', () => {

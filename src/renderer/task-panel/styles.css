@@ -145,6 +145,22 @@ html, body {
   color: #a66; transition: opacity 0.15s;
   background: none; border: none; padding: 0 2px;
 }
+.task-item.focus { border-left: 2px solid #f0a040; }
+.task-item.priority-high { border-left: 2px solid #f66; }
+.task-item.priority-low { opacity: 0.6; }
+
+.task-priority {
+  font-size: 11px; padding: 0 4px; border-radius: 3px; font-weight: 600;
+}
+.task-priority.high { color: #f66; background: rgba(255,100,100,0.1); }
+.task-priority.low   { color: #888; background: rgba(255,255,255,0.05); }
+
+.task-focus-btn {
+  font-size: 14px; cursor: pointer; opacity: 0.3; transition: opacity 0.15s;
+  background: none; border: none; padding: 0 2px;
+}
+.task-focus-btn:hover, .task-focus-btn.active { opacity: 1; }
+
 .task-item:hover .task-delete { opacity: 0.6; }
 .task-delete:hover { opacity: 1 !important; }
 

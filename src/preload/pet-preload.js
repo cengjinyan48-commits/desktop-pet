@@ -41,6 +41,8 @@ window.electronAPI = {
 
   // ── Shortcuts ───────────────────────────────────
   runShortcut:       (name)  => ipcRenderer.invoke('shortcuts:run', name),
+  launchApp:         (name)  => ipcRenderer.invoke('launch:app', name),
+  toggleDnD:         (on)    => ipcRenderer.invoke('focus:toggle-dnd', on),
 
   // ── Weather ─────────────────────────────────────
   getWeather:        ()      => ipcRenderer.invoke('weather:get'),

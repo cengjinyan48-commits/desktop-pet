@@ -24,9 +24,13 @@ function start(database) {
     fireCheckin
   );
 
-  // 2. Task time reminders — every 5 minutes
-  reminderInterval = setInterval(checkTaskReminders, 5 * 60 * 1000);
-  checkTaskReminders(); // run once on startup too
+  // 2. Task + Meeting reminders — every 3 minutes
+  reminderInterval = setInterval(() => {
+    checkTaskReminders();
+    checkMeetingReminders();
+  }, 3 * 60 * 1000);
+  checkTaskReminders();
+  checkMeetingReminders();
 
   // 3. Evening summary — 21:00
   summaryJob = schedule.scheduleJob(
@@ -59,7 +63,7 @@ function start(database) {
     }
   }, 3000);
 
-  console.log(`⏰ Scheduler ready: checkin@${config.CHECKIN_HOUR}:00 | reminders@5min | water@hourly | summary@21:00`);
+  console.log(`⏰ Scheduler ready: checkin@${config.CHECKIN_HOUR}:00 | reminders@3min | water@hourly | summary@21:00`);
 }
 
 function stop() {
@@ -139,6 +143,32 @@ function fireEveningSummary() {
 
   // Also show on pet if visible
   sendToPet('summary:show', { total, done, msg });
+}
+
+// ── 3.5 Meeting Reminders ──────────────────────────────
+
+function checkMeetingReminders() {
+  if (!db) return;
+  const today = db.todayStr();
+  const events = db.getCalendarCache(today);
+  const now = new Date();
+  const curMin = now.getHours() * 60 + now.getMinutes();
+
+  for (const evt of events) {
+    const m = (evt.start_date || '').match(/(\d{2}):(\d{2})/);
+    if (!m) continue;
+    const diff = (parseInt(m[1]) * 60 + parseInt(m[2])) - curMin;
+    if (diff > 0 && diff <= 5) {
+      const key = 'meeting_reminded_' + evt.uid + '_' + today;
+      if (db.getSetting(key)) continue;
+      new (require('electron').Notification)({
+        title: '📅 会议提醒',
+        body: '"' + evt.summary + '" 还有 ' + diff + ' 分钟开始',
+        silent: false
+      }).show();
+      db.setSetting(key, '1');
+    }
+  }
 }
 
 // ── 4. Water / Break Reminders ─────────────────────────
