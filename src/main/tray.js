@@ -29,6 +29,10 @@ function create() {
       label: '任务面板',
       click: () => windows.toggleTaskPanel()
     },
+    {
+      label: '和鱼烧聊天 🧠',
+      click: () => windows.toggleChatWindow()
+    },
     { type: 'separator' },
     {
       label: '偏好设置…',

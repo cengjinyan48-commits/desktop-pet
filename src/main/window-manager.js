@@ -171,7 +171,7 @@ function createSettingsWindow() {
   }
 
   settingsWindow = new BrowserWindow({
-    width: 380, height: 460,
+    width: 380, height: 640,
     resizable: false,
     frame: true,
     titleBarStyle: 'default',
@@ -236,6 +236,73 @@ function closeStatsWindow() {
   }
 }
 
+// ── AI Chat Window ─────────────────────────────────────────
+
+let chatWindow = null;
+
+function createChatWindow() {
+  if (chatWindow && !chatWindow.isDestroyed()) {
+    chatWindow.show();
+    chatWindow.focus();
+    return chatWindow;
+  }
+
+  // Open next to the pet if possible
+  const petBounds = getPetBounds();
+  const { width: sw, height: sh } = screen.getPrimaryDisplay().workAreaSize;
+  let x = petBounds ? petBounds.x - 340 : Math.round(sw / 2 - 170);
+  let y = petBounds ? petBounds.y - 100 : Math.round(sh / 2 - 240);
+  x = Math.max(10, Math.min(x, sw - 350));
+  y = Math.max(30, Math.min(y, sh - 500));
+
+  chatWindow = new BrowserWindow({
+    width: 340, height: 480,
+    minWidth: 300, minHeight: 360,
+    x, y,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    hasShadow: true,
+    resizable: true,
+    skipTaskbar: true,
+    vibrancy: 'hud',
+    backgroundColor: '#00000000',
+    webPreferences: {
+      contextIsolation: false,
+      nodeIntegration: true,
+      sandbox: false
+    }
+  });
+
+  chatWindow.loadFile(path.join(__dirname, '..', 'renderer', 'chat', 'index.html'));
+
+  chatWindow.on('close', (e) => {
+    if (!appIsQuitting) {
+      e.preventDefault();
+      chatWindow.hide();
+    }
+  });
+
+  return chatWindow;
+}
+
+function toggleChatWindow() {
+  if (!chatWindow || chatWindow.isDestroyed()) {
+    createChatWindow();
+    return;
+  }
+  if (chatWindow.isVisible()) {
+    chatWindow.hide();
+  } else {
+    chatWindow.show();
+    chatWindow.focus();
+  }
+}
+
+function hideChatWindow() {
+  if (chatWindow && !chatWindow.isDestroyed()) chatWindow.hide();
+}
+
 // ── Shared state ────────────────────────────────────────────
 
 let appIsQuitting = false;
@@ -261,5 +328,8 @@ module.exports = {
   closeSettingsWindow,
   createStatsWindow,
   closeStatsWindow,
+  createChatWindow,
+  toggleChatWindow,
+  hideChatWindow,
   setAppIsQuitting
 };

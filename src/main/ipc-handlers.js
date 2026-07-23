@@ -4,11 +4,13 @@ const { ipcMain, app } = require('electron');
 const windows = require('./window-manager');
 const cursorPoll = require('./cursor-poll');
 const calendarBridge = require('./calendar-bridge');
+const aiAssistant = require('./ai-assistant');
 
 let db = null;
 
 function register(database) {
   db = database;
+  aiAssistant.init(database);
 
   // ── Pet Window ───────────────────────────────────────
 
@@ -135,18 +137,22 @@ function register(database) {
 
   ipcMain.handle('settings:get-all', async () => {
     if (!db) return {};
+    const aiStatus = aiAssistant.status();
     return {
       pet_name:        db.getSetting('pet_name')       || '小橘',
       calendar:        db.getSetting('calendar')       || '个人',
       checkin_hour:    db.getSetting('checkin_hour')   || '9',
       checkin_minute:  db.getSetting('checkin_minute') || '0',
-      auto_launch:     db.getSetting('auto_launch')    || 'true'
+      auto_launch:     db.getSetting('auto_launch')    || 'true',
+      ai_model:        aiStatus.model,
+      ai_has_key:      aiStatus.hasKey   // key 本身永不回传渲染进程
     };
   });
 
   ipcMain.handle('settings:save-all', async (_e, settings) => {
     if (!db) return false;
     for (const [key, value] of Object.entries(settings)) {
+      if (key === 'ai_has_key' || key === 'ai_api_key') continue; // key 走 ai:save-key 通道
       db.setSetting(key, String(value));
     }
     // Apply auto-launch immediately
@@ -341,6 +347,29 @@ function register(database) {
       console.error('Calendar delete event error:', err.message);
       throw err;
     }
+  });
+
+  // ── AI Chat ─────────────────────────────────────────
+
+  ipcMain.handle('chat:open', () => { windows.createChatWindow(); });
+  ipcMain.handle('chat:hide', () => { windows.hideChatWindow(); });
+
+  ipcMain.handle('ai:chat', async (_e, text) => {
+    return aiAssistant.chat(String(text || '').trim());
+  });
+
+  ipcMain.handle('ai:status', () => aiAssistant.status());
+
+  ipcMain.handle('ai:clear', () => aiAssistant.clearHistory());
+
+  ipcMain.handle('ai:save-key', (_e, key) => {
+    aiAssistant.saveKey(key);
+    return true;
+  });
+
+  ipcMain.handle('ai:save-model', (_e, model) => {
+    if (db && model) db.setSetting('ai_model', String(model));
+    return true;
   });
 
   // ── App ──────────────────────────────────────────────

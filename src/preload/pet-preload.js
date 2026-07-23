@@ -47,6 +47,9 @@ window.electronAPI = {
   // ── Weather ─────────────────────────────────────
   getWeather:        ()      => ipcRenderer.invoke('weather:get'),
 
+  // ── AI Chat ─────────────────────────────────────
+  openChat:          ()      => ipcRenderer.invoke('chat:open'),
+
   // ── Panel ──────────────────────────────────────
   showPanel:         ()      => ipcRenderer.invoke('panel:show'),
   hidePanel:         ()      => ipcRenderer.invoke('panel:hide'),

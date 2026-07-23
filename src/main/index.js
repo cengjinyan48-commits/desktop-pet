@@ -57,7 +57,12 @@ app.whenReady().then(async () => {
     }
   });
 
-  console.log('🐱 Desktop Pet is running! (Cmd+Shift+Y to summon)');
+  // 11. Global shortcut: Cmd+Shift+Space → AI chat window
+  globalShortcut.register('Command+Shift+Space', () => {
+    windows.toggleChatWindow();
+  });
+
+  console.log('🐱 Desktop Pet is running! (Cmd+Shift+Y to summon, Cmd+Shift+Space to chat)');
 });
 
 // macOS: keep app alive when all windows are closed (tray app)

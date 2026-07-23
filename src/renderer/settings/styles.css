@@ -32,6 +32,8 @@ html, body {
   margin-bottom: 6px;
 }
 .field input[type="text"],
+.field input[type="password"],
+.field select,
 .field input[type="number"] {
   width: 100%;
   padding: 8px 12px;

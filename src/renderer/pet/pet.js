@@ -139,7 +139,7 @@
   }
 
   function showContextMenu(x, y) {
-    const mw = 175, mh = 260;
+    const mw = 175, mh = 285;
     let mx = Math.min(x, window.innerWidth - mw - 4);
     let my = Math.min(y, window.innerHeight - mh - 4);
     mx = Math.max(4, mx); my = Math.max(4, my);
@@ -148,6 +148,10 @@
     ctxMenu.style.top  = my + 'px';
     ctxMenu.classList.remove('hidden');
 
+    document.getElementById('ctx-ai-chat').onclick = () => {
+      ctxMenu.classList.add('hidden');
+      if (window.electronAPI) window.electronAPI.openChat();
+    };
     document.getElementById('ctx-show-panel').onclick = () => {
       ctxMenu.classList.add('hidden');
       if (window.electronAPI) window.electronAPI.showPanel();
