@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveAllSettings: (s)       => ipcRenderer.invoke('settings:save-all', s),
   closeSettings: ()          => ipcRenderer.invoke('settings:close'),
   aiSaveKey: (key)           => ipcRenderer.invoke('ai:save-key', key),
-  aiSaveModel: (model)       => ipcRenderer.invoke('ai:save-model', model)
+  aiSaveModel: (model)       => ipcRenderer.invoke('ai:save-model', model),
+  aiSetSource: (source)      => ipcRenderer.invoke('ai:set-source', source)
 });

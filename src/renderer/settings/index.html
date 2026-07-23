@@ -41,12 +41,21 @@
       </div>
 
       <div class="field">
-        <label>🧠 AI 助理 (Claude API Key)</label>
+        <label>🧠 AI 来源</label>
+        <select id="ai-source">
+          <option value="cc-switch">跟随 CC Switch（推荐，自动同步中转站）</option>
+          <option value="official">自己的 API Key</option>
+        </select>
+        <span class="hint" id="ai-source-hint"></span>
+      </div>
+
+      <div class="field" id="ai-key-field">
+        <label>🔑 Claude API Key</label>
         <input type="password" id="ai-api-key" placeholder="sk-ant-…（留空则不修改）">
         <span class="hint" id="ai-key-hint">未配置 — 填入后鱼烧才能聊天</span>
       </div>
 
-      <div class="field">
+      <div class="field" id="ai-model-field">
         <label>🤖 AI 模型</label>
         <select id="ai-model">
           <option value="claude-opus-4-8">Claude Opus 4.8（默认，最聪明）</option>

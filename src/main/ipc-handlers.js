@@ -144,15 +144,19 @@ function register(database) {
       checkin_hour:    db.getSetting('checkin_hour')   || '9',
       checkin_minute:  db.getSetting('checkin_minute') || '0',
       auto_launch:     db.getSetting('auto_launch')    || 'true',
-      ai_model:        aiStatus.model,
+      ai_source:       aiStatus.source,
+      ai_cc_available: aiStatus.ccAvailable,
+      ai_cc_model:     aiStatus.source === 'cc-switch' ? aiStatus.model : null,
+      ai_model:        db.getSetting('ai_model') || aiAssistant.DEFAULT_MODEL,
       ai_has_key:      aiStatus.hasKey   // key 本身永不回传渲染进程
     };
   });
 
   ipcMain.handle('settings:save-all', async (_e, settings) => {
     if (!db) return false;
+    const skipKeys = ['ai_has_key', 'ai_api_key', 'ai_cc_available', 'ai_cc_model', 'ai_source'];
     for (const [key, value] of Object.entries(settings)) {
-      if (key === 'ai_has_key' || key === 'ai_api_key') continue; // key 走 ai:save-key 通道
+      if (skipKeys.includes(key)) continue; // key 走 ai:save-key；source 走 ai:set-source；其余为只读状态
       db.setSetting(key, String(value));
     }
     // Apply auto-launch immediately
@@ -369,6 +373,11 @@ function register(database) {
 
   ipcMain.handle('ai:save-model', (_e, model) => {
     if (db && model) db.setSetting('ai_model', String(model));
+    return true;
+  });
+
+  ipcMain.handle('ai:set-source', (_e, source) => {
+    aiAssistant.setSource(String(source));
     return true;
   });
 

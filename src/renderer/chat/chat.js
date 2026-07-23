@@ -25,9 +25,10 @@
       ]);
       const name = settings.pet_name || '鱼烧';
       titleEl.textContent = `🐱 ${name}`;
-      modelEl.textContent = status.model || '';
-      if (!status.hasKey) {
-        welcomeEl.textContent = '还没有配置 API Key，先去「偏好设置 → AI 助理」填一下，我才能开口说话哦 🔑';
+      const sourceTag = status.active === 'cc-switch' ? '⚡CC Switch · ' : '';
+      modelEl.textContent = sourceTag + (status.model || '');
+      if (!status.active) {
+        welcomeEl.textContent = '还没有可用的 AI 配置，去「偏好设置 → AI 来源」看看吧 🔑';
       } else {
         welcomeEl.textContent = `喵～我是${name}，有什么想聊的？我还能帮你记任务、查任务哦 📝`;
       }

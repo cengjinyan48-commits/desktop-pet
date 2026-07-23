@@ -9,6 +9,10 @@
   const checkinHrEl  = document.getElementById('checkin-hour');
   const checkinMinEl = document.getElementById('checkin-minute');
   const autoLaunchEl = document.getElementById('auto-launch');
+  const aiSourceEl     = document.getElementById('ai-source');
+  const aiSourceHintEl = document.getElementById('ai-source-hint');
+  const aiKeyFieldEl   = document.getElementById('ai-key-field');
+  const aiModelFieldEl = document.getElementById('ai-model-field');
   const aiKeyEl      = document.getElementById('ai-api-key');
   const aiKeyHintEl  = document.getElementById('ai-key-hint');
   const aiModelEl    = document.getElementById('ai-model');
@@ -32,11 +36,13 @@
       autoLaunchEl.checked = s.auto_launch !== 'false'; // default true
 
       // AI settings — key never comes back, only whether one is stored
+      aiSourceEl.value = s.ai_source || 'cc-switch';
       aiModelEl.value = s.ai_model || 'claude-opus-4-8';
       if (s.ai_has_key) {
         aiKeyHintEl.textContent = '✅ 已配置（填入新 Key 可替换）';
         aiKeyEl.placeholder = '••••••••（留空则不修改）';
       }
+      updateSourceUI(s);
     } catch (e) {
       showStatus('加载设置失败', true);
       console.error(e);
@@ -66,6 +72,7 @@
       await window.electronAPI.saveAllSettings(settings);
 
       // AI: key goes through its own channel and is never stored in plain settings
+      await window.electronAPI.aiSetSource(aiSourceEl.value);
       const newKey = aiKeyEl.value.trim();
       if (newKey) {
         await window.electronAPI.aiSaveKey(newKey);
@@ -82,6 +89,24 @@
       showStatus('保存失败: ' + e.message, true);
     }
   }
+
+  // 根据来源显隐 Key/模型字段：跟随 CC Switch 时两者都不需要
+  function updateSourceUI(s) {
+    const isCC = aiSourceEl.value === 'cc-switch';
+    aiKeyFieldEl.style.display = isCC ? 'none' : '';
+    aiModelFieldEl.style.display = isCC ? 'none' : '';
+    if (isCC) {
+      if (s && s.ai_cc_available) {
+        aiSourceHintEl.textContent = '✅ 已连接 CC Switch' + (s.ai_cc_model ? `（模型: ${s.ai_cc_model}）` : '');
+      } else {
+        aiSourceHintEl.textContent = '⚠️ 未找到 CC Switch 配置，将回落到自己的 Key';
+      }
+    } else {
+      aiSourceHintEl.textContent = '使用下方自己的 API Key 和模型';
+    }
+  }
+
+  aiSourceEl.addEventListener('change', () => updateSourceUI(originalSettings));
 
   function showStatus(msg, isError) {
     statusEl.textContent = msg;
