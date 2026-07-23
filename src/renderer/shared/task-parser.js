@@ -15,9 +15,10 @@ const DATE_PATTERNS = [
     if (mon < 1 || mon > 12 || day < 1 || day > 31) return null;
     return `${now.getFullYear()}-${pad(mon)}-${pad(day)}`;
   }},
-  { re: /明天/,   build: (m, now) => offsetDate(now, 1) },
-  { re: /后天/,   build: (m, now) => offsetDate(now, 2) },
+  // 大后天必须排在后天之前，否则"大后天"会被"后天"子串抢先命中
   { re: /大后天/, build: (m, now) => offsetDate(now, 3) },
+  { re: /后天/,   build: (m, now) => offsetDate(now, 2) },
+  { re: /明天/,   build: (m, now) => offsetDate(now, 1) },
   { re: /下周\s*([一二三四五六日天])/, build: (m, now) => {
     const map = { '一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'日':0,'天':0 };
     const target = map[m[1]];
@@ -34,7 +35,9 @@ const DATE_PATTERNS = [
     d.setDate(d.getDate() + ((target - d.getDay() + 7) % 7));
     return fmtDate(d);
   }},
-  { re: /(\d{1,2})\s*[日号]/, build: (m, now) => {
+  // 负向后顾：跳过"每月15号"这类重复表达（含从数字中间重新匹配的情况），
+  // 把数字留给重复规则解析
+  { re: /(?<!每月\s*)(?<!\d)(\d{1,2})\s*[日号]/, build: (m, now) => {
     const day = parseInt(m[1], 10);
     if (day < 1 || day > 31) return null;
     const d = new Date(now);

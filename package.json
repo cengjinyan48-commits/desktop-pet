@@ -6,6 +6,7 @@
   "scripts": {
     "start": "unset ELECTRON_RUN_AS_NODE && electron .",
     "build": "electron-builder",
+    "test": "node --test test/*.test.js",
     "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "keywords": [
