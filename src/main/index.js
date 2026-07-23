@@ -62,6 +62,9 @@ app.whenReady().then(async () => {
     windows.toggleChatWindow();
   });
 
+  // 12. Daily update check (GitHub Releases)
+  require('./update-checker').start();
+
   console.log('🐱 Desktop Pet is running! (Cmd+Shift+Y to summon, Cmd+Shift+Space to chat)');
 });
 

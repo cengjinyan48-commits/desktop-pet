@@ -38,6 +38,10 @@ function create() {
       label: '偏好设置…',
       click: () => windows.createSettingsWindow()
     },
+    {
+      label: '检查更新…',
+      click: () => require('./update-checker').check(true)
+    },
     { type: 'separator' },
     {
       label: '退出',
