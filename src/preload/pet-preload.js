@@ -1,10 +1,9 @@
 // Preload script for the Pet window
-// With nodeIntegration enabled, we use direct require + window assignment
+// contextIsolation: true — API exposed via contextBridge only
 
-const { ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// Expose API on window
-window.electronAPI = {
+contextBridge.exposeInMainWorld('electronAPI', {
   // ── Pet State ──────────────────────────────────
   getPetState:       ()      => ipcRenderer.invoke('pet:get-state'),
   savePetState:      (state) => ipcRenderer.invoke('pet:save-state', state),
@@ -69,4 +68,4 @@ window.electronAPI = {
   onShortcutQuickInput:(cb)  => ipcRenderer.on('shortcut:quick-input', (_e, ...args) => cb(...args)),
   onWaterRemind:     (cb)    => ipcRenderer.on('water:remind', (_e, ...args) => cb(...args)),
   removeAllListeners:(ch)    => ipcRenderer.removeAllListeners(ch)
-};
+});

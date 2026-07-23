@@ -1,11 +1,10 @@
 // Stats panel — load & display stats
 (function () {
   'use strict';
-  const { ipcRenderer } = require('electron');
 
   async function load() {
     try {
-      const s = await ipcRenderer.invoke('stats:get');
+      const s = await window.electronAPI.getStats();
       if (!s || !s.today) return;
 
       // Today
@@ -44,7 +43,7 @@
   }
 
   document.getElementById('btn-close').addEventListener('click', () => {
-    ipcRenderer.invoke('stats:close');
+    window.electronAPI.closeStats();
   });
 
   load();

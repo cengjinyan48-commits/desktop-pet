@@ -3,8 +3,8 @@
 (function () {
   'use strict';
 
-  const { ipcRenderer } = require('electron');
-  const { todayStr, pad } = require('../shared/utils.js');
+  // window.electronAPI 由 preload 注入；PetUtils 由 utils.js <script> 提供
+  const { todayStr, pad } = window.PetUtils;
 
   // ── DOM ──────────────────────────────────────────────
   const panel      = document.getElementById('panel');
@@ -46,7 +46,7 @@
     renderCalendar();
     loadTasks();
 
-    btnClose.addEventListener('click', () => ipcRenderer.invoke('panel:hide'));
+    btnClose.addEventListener('click', () => window.electronAPI.hidePanel());
     btnSync.addEventListener('click', syncCalendar);
     addInput.addEventListener('keydown', onAddKeydown);
     calPrev.addEventListener('click', () => { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); });
@@ -61,7 +61,7 @@
       loadTasks();
     });
 
-    ipcRenderer.on('tasks:refreshed', () => {
+    window.electronAPI.onTasksRefreshed(() => {
       loadTasks();
       loadMonthSummary();
     });
@@ -140,7 +140,7 @@
   async function loadMonthSummary() {
     try {
       const yearMonth = `${calYear}-${pad(calMonth+1)}`;
-      const summary = await ipcRenderer.invoke('tasks:month-summary', yearMonth);
+      const summary = await window.electronAPI.monthSummary(yearMonth);
       if (summary && Array.isArray(summary)) {
         taskDates = new Set(summary);
         renderCalendar();
@@ -153,7 +153,7 @@
   // ── Load & Render Tasks ──────────────────────────────
 
   async function loadTasks() {
-    allTasks = await ipcRenderer.invoke('tasks:get-all', selectedDate);
+    allTasks = await window.electronAPI.getTasks(selectedDate);
     // Refresh month summary
     loadMonthSummary();
     render();
@@ -250,7 +250,7 @@
 
   async function toggleFocus(task, btn) {
     const newFocus = task.is_focus ? 0 : 1;
-    await ipcRenderer.invoke('tasks:update', task.id, { is_focus: newFocus });
+    await window.electronAPI.updateTask(task.id, { is_focus: newFocus });
     task.is_focus = newFocus;
     btn.textContent = newFocus ? '⭐' : '☆';
     btn.classList.toggle('active', !!newFocus);
@@ -262,12 +262,12 @@
 
   async function toggleTask(task, cbEl) {
     const newStatus = task.status === 'done' ? 'pending' : 'done';
-    await ipcRenderer.invoke('tasks:update', task.id, { status: newStatus });
+    await window.electronAPI.updateTask(task.id, { status: newStatus });
     task.status = newStatus;
     if (newStatus === 'done') {
       cbEl.classList.add('done');
       cbEl.nextElementSibling.classList.add('done');
-      ipcRenderer.invoke('pet:trigger-happy');
+      window.electronAPI.triggerPetHappy();
     } else {
       cbEl.classList.remove('done');
       cbEl.nextElementSibling.classList.remove('done');
@@ -275,7 +275,7 @@
   }
 
   async function deleteTask(task) {
-    await ipcRenderer.invoke('tasks:delete', task.id);
+    await window.electronAPI.deleteTask(task.id);
     allTasks = allTasks.filter(t => t.id !== task.id);
     render();
     loadMonthSummary();
@@ -283,10 +283,10 @@
 
   async function addToCalendar(task) {
     try {
-      const uid = await ipcRenderer.invoke('calendar:add-event', { ...task, date: selectedDate });
+      const uid = await window.electronAPI.addCalendarEvent({ ...task, date: selectedDate });
       if (uid) {
         task.calendar_uid = uid;
-        await ipcRenderer.invoke('tasks:update', task.id, { calendar_uid: uid });
+        await window.electronAPI.updateTask(task.id, { calendar_uid: uid });
         render();
       }
     } catch (e) {
@@ -298,9 +298,9 @@
     if (e.key !== 'Enter') return;
     const text = addInput.value.trim();
     if (!text) return;
-    const tasks = await ipcRenderer.invoke('tasks:parse', text);
+    const tasks = await window.electronAPI.parseTasks(text);
     for (const t of tasks) {
-      const added = await ipcRenderer.invoke('tasks:add', {
+      const added = await window.electronAPI.addTask({
         ...t,
         date: t.date || selectedDate,
         source: 'manual'
@@ -315,7 +315,7 @@
   async function syncCalendar() {
     btnSync.textContent = '⏳';
     try {
-      await ipcRenderer.invoke('calendar:sync');
+      await window.electronAPI.syncCalendar();
       await loadTasks();
       btnSync.textContent = '✅';
       setTimeout(() => { btnSync.textContent = '🔄'; }, 1500);

@@ -1,7 +1,7 @@
 // Animation System — State machine for all pet animations
 // States: idle | walk | sleep | happy | stretch | yawn | eat | pet | rabbit | rabbit-walk | rabbit-happy
 
-const SpriteGenerator = require('./sprite-generator.js');
+// SpriteGenerator 由 sprite-generator.js 以 <script> 先行加载（window.SpriteGenerator）
 
 const FRAME_COUNT = { idle:4, walk:6, sleep:4, happy:4, stretch:4, yawn:4, eat:4, pet:2, rabbit:4, 'rabbit-walk':6, 'rabbit-happy':4 };
 const FRAME_MS    = { idle:500, walk:150, sleep:800, happy:120, stretch:200, yawn:250, eat:200, pet:300, rabbit:500, 'rabbit-walk':150, 'rabbit-happy':120 };

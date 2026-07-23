@@ -3,7 +3,6 @@
 (function () {
   'use strict';
 
-  const { ipcRenderer } = require('electron');
 
   const petNameEl    = document.getElementById('pet-name');
   const calNameEl    = document.getElementById('calendar-name');
@@ -23,7 +22,7 @@
 
   async function load() {
     try {
-      const s = await ipcRenderer.invoke('settings:get-all');
+      const s = await window.electronAPI.getAllSettings();
       originalSettings = s;
 
       petNameEl.value    = s.pet_name    || '小橘';
@@ -64,21 +63,21 @@
     }
 
     try {
-      await ipcRenderer.invoke('settings:save-all', settings);
+      await window.electronAPI.saveAllSettings(settings);
 
       // AI: key goes through its own channel and is never stored in plain settings
       const newKey = aiKeyEl.value.trim();
       if (newKey) {
-        await ipcRenderer.invoke('ai:save-key', newKey);
+        await window.electronAPI.aiSaveKey(newKey);
         aiKeyEl.value = '';
         aiKeyHintEl.textContent = '✅ 已配置';
       }
-      await ipcRenderer.invoke('ai:save-model', aiModelEl.value);
+      await window.electronAPI.aiSaveModel(aiModelEl.value);
 
       originalSettings = settings;
       showStatus('✅ 设置已保存');
       // Auto-close after brief delay
-      setTimeout(() => { ipcRenderer.invoke('settings:close'); }, 800);
+      setTimeout(() => { window.electronAPI.closeSettings(); }, 800);
     } catch (e) {
       showStatus('保存失败: ' + e.message, true);
     }
@@ -96,12 +95,12 @@
 
   saveBtn.addEventListener('click', save);
   cancelBtn.addEventListener('click', () => {
-    ipcRenderer.invoke('settings:close');
+    window.electronAPI.closeSettings();
   });
 
   // Keyboard: Cmd+Enter to save, Escape to close
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') ipcRenderer.invoke('settings:close');
+    if (e.key === 'Escape') window.electronAPI.closeSettings();
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) save();
   });
 

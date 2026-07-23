@@ -1,10 +1,9 @@
 // Preload script for the Task Panel window
-// Panel uses direct require('electron') via nodeIntegration, so this is minimal.
+// contextIsolation: true — API exposed via contextBridge only
 
-const { ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
-// Provide API via window (contextIsolation: false)
-window.electronAPI = {
+contextBridge.exposeInMainWorld('electronAPI', {
   getTasks:           (date)  => ipcRenderer.invoke('tasks:get-all', date),
   addTask:            (task)  => ipcRenderer.invoke('tasks:add', task),
   updateTask:         (id, f) => ipcRenderer.invoke('tasks:update', id, f),
@@ -23,4 +22,4 @@ window.electronAPI = {
 
   onTasksRefreshed:   (cb) => { ipcRenderer.on('tasks:refreshed', (_e, ...args) => cb(...args)); },
   removeAllListeners: (ch) => { ipcRenderer.removeAllListeners(ch); }
-};
+});

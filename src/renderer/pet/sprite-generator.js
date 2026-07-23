@@ -425,6 +425,10 @@ function generateAllFrames(state) {
   return frames;
 }
 
+const _SpriteGeneratorAPI = { generateFrame, generateAllFrames, S, setSkin, getCurrentSkin: () => currentSkin };
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { generateFrame, generateAllFrames, S, setSkin, getCurrentSkin: () => currentSkin };
+  module.exports = _SpriteGeneratorAPI;
+}
+if (typeof window !== 'undefined') {
+  window.SpriteGenerator = _SpriteGeneratorAPI;
 }

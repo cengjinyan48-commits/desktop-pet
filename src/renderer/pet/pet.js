@@ -3,10 +3,8 @@
 (function () {
   'use strict';
 
-  const SpriteGenerator = require('./sprite-generator.js');
-  const CanvasRenderer   = require('./canvas-renderer.js');
-  const AnimationSystem  = require('./animation-system.js');
-  const DragHandler      = require('./drag-handler.js');
+  // SpriteGenerator / CanvasRenderer / AnimationSystem / DragHandler
+  // 均由 index.html 以 <script> 标签先行加载为页面全局
 
   // ── DOM refs ────────────────────────────────────────
   const canvas     = document.getElementById('pet-canvas');

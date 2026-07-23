@@ -22,3 +22,6 @@ function offsetDate(days) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { todayStr, pad, fmtDate, offsetDate };
 }
+if (typeof window !== 'undefined') {
+  window.PetUtils = { todayStr, pad, fmtDate, offsetDate };
+}

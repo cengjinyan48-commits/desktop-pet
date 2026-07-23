@@ -31,9 +31,9 @@ function createPetWindow(savedX, savedY) {
     backgroundColor: '#00000000',     // fully transparent
     webPreferences: {
       preload: preloadPath,
-      contextIsolation: false,
-      nodeIntegration: true,
-      sandbox: false
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
@@ -112,9 +112,9 @@ function createTaskPanelWindow() {
     backgroundColor: '#00000000',
     webPreferences: {
       preload: preloadPath,
-      contextIsolation: false,
-      nodeIntegration: true,
-      sandbox: false
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
@@ -178,9 +178,10 @@ function createSettingsWindow() {
     title: '偏好设置',
     backgroundColor: '#1e1c1a',
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      sandbox: false
+      preload: path.join(__dirname, '..', 'preload', 'settings-preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
@@ -217,9 +218,10 @@ function createStatsWindow() {
     titleBarStyle: 'default', title: '统计面板',
     backgroundColor: '#1e1c1a',
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      sandbox: false
+      preload: path.join(__dirname, '..', 'preload', 'stats-preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
@@ -268,9 +270,10 @@ function createChatWindow() {
     vibrancy: 'hud',
     backgroundColor: '#00000000',
     webPreferences: {
-      contextIsolation: false,
-      nodeIntegration: true,
-      sandbox: false
+      preload: path.join(__dirname, '..', 'preload', 'chat-preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 

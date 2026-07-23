@@ -3,7 +3,6 @@
 (function () {
   'use strict';
 
-  const { ipcRenderer } = require('electron');
 
   const messagesEl = document.getElementById('chat-messages');
   const inputEl    = document.getElementById('chat-input');
@@ -21,8 +20,8 @@
   async function init() {
     try {
       const [settings, status] = await Promise.all([
-        ipcRenderer.invoke('settings:get-all'),
-        ipcRenderer.invoke('ai:status')
+        window.electronAPI.getAllSettings(),
+        window.electronAPI.aiStatus()
       ]);
       const name = settings.pet_name || '鱼烧';
       titleEl.textContent = `🐱 ${name}`;
@@ -93,7 +92,7 @@
     const typing = addTyping();
 
     try {
-      const res = await ipcRenderer.invoke('ai:chat', text);
+      const res = await window.electronAPI.aiChat(text);
       typing.remove();
       if (res.ok) {
         addMessage('assistant', res.message, res.toolsUsed);
@@ -128,19 +127,19 @@
   sendBtn.addEventListener('click', send);
 
   clearBtn.addEventListener('click', async () => {
-    await ipcRenderer.invoke('ai:clear');
+    await window.electronAPI.aiClear();
     messagesEl.innerHTML = '';
     const msg = addMessage('assistant', '对话已清空，我们重新开始吧 ✨');
     msg.querySelector('.msg-bubble').id = 'welcome-msg';
   });
 
   closeBtn.addEventListener('click', () => {
-    ipcRenderer.invoke('chat:hide');
+    window.electronAPI.hideChat();
   });
 
   // Esc closes the window
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') ipcRenderer.invoke('chat:hide');
+    if (e.key === 'Escape') window.electronAPI.hideChat();
   });
 
   init();
